@@ -7,7 +7,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    API.get('/products/categories').then(res => {
+    API.get('/categories').then(res => {
       setCategories(res.data);
       setLoading(false);
     }).catch(() => setLoading(false));
