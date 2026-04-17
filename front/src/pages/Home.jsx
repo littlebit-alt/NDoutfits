@@ -5,12 +5,22 @@ import API from '../api';
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [whatsapp, setWhatsapp] = useState('213773002781'); // Default number
 
   useEffect(() => {
+    // Fetch categories
     API.get('/categories').then(res => {
       setCategories(res.data);
       setLoading(false);
     }).catch(() => setLoading(false));
+    
+    // Fetch WhatsApp number from settings
+    API.get('/settings/whatsapp').then(res => { 
+      if (res.data && res.data.value) setWhatsapp(res.data.value); 
+    }).catch(() => {
+      // Keep default if API fails
+      console.log('Using default WhatsApp number');
+    });
   }, []);
 
   return (
