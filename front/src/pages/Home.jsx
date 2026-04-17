@@ -2,14 +2,6 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../api';
 
-const CATEGORY_EMOJIS = {
-  'SAC A MAIN': '👜',
-  'CASQUETTE': '🧢',
-  'SAC A DOS': '🎒',
-  'PORTEFEUILLE': '👛',
-  'CEINTURE': '👔',
-};
-
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,56 +14,99 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="page" style={{ maxWidth: 480, margin: '0 auto', padding: '20px 16px' }}>
+    <div className="page" style={{ maxWidth: 480, margin: '0 auto' }}>
+
       {/* Hero */}
       <div style={{
-        textAlign: 'center', padding: '30px 0 24px',
-        background: 'linear-gradient(135deg, #0a0a0a 0%, #0d1a24 100%)',
-        borderRadius: 20, marginBottom: 28,
-        border: '1px solid #1a2a3a'
+        textAlign: 'center',
+        padding: '52px 24px 40px',
+        background: 'linear-gradient(180deg, #f5ede4 0%, #faf7f4 100%)',
+        borderBottom: '1px solid #e8ddd4',
+        marginBottom: 36
       }}>
-        <div style={{ fontSize: 52, marginBottom: 8 }}>🦈</div>
-        <div style={{ fontFamily: 'Bebas Neue', fontSize: 42, letterSpacing: 6, color: '#00b4f0' }}>DZ SHARK</div>
-        <div style={{ color: '#888', fontSize: 14 }}>Store Premium Algeria</div>
+        <img
+          src="/logo.png"
+          alt="ND Outfits"
+          style={{ width: 160, objectFit: 'contain', marginBottom: 16 }}
+          onError={e => {
+            e.target.style.display = 'none';
+          }}
+        />
+        <div style={{ fontFamily: 'Cormorant Garamond', fontSize: 13, color: '#9a8778', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 20 }}>
+          Mode Féminine · Algérie
+        </div>
         <a href="https://wa.me/213773002781" target="_blank" rel="noreferrer"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            marginTop: 16, background: '#25D366', color: '#fff',
-            padding: '10px 22px', borderRadius: 25, fontWeight: 700, fontSize: 14
+            background: '#25D366', color: '#fff',
+            padding: '11px 26px', borderRadius: 2,
+            fontSize: 13, letterSpacing: 1, fontWeight: 500
           }}>
-          📱 0773 002 781
+          📱 Contactez-nous
         </a>
       </div>
 
-      {/* Categories Grid */}
-      <div style={{ marginBottom: 16 }}>
-        <h2 style={{ fontFamily: 'Bebas Neue', fontSize: 22, letterSpacing: 3, color: '#888', marginBottom: 16 }}>
-          NOS CATÉGORIES
-        </h2>
+      {/* Categories */}
+      <div style={{ padding: '0 16px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ fontFamily: 'Cormorant Garamond', fontSize: 32, color: '#3a2e27', fontStyle: 'italic', fontWeight: 300 }}>
+            Nos Collections
+          </div>
+          <div style={{ width: 40, height: 1, background: '#b8906a', margin: '10px auto 0' }} />
+        </div>
+
         {loading ? (
-          <div style={{ textAlign: 'center', color: '#555', padding: 40 }}>Chargement...</div>
+          <div style={{ textAlign: 'center', color: '#9a8778', padding: 60, fontFamily: 'Cormorant Garamond', fontSize: 18, fontStyle: 'italic' }}>
+            Chargement...
+          </div>
+        ) : categories.length === 0 ? (
+          <div style={{ textAlign: 'center', color: '#9a8778', padding: 60, fontFamily: 'Cormorant Garamond', fontSize: 18, fontStyle: 'italic' }}>
+            Aucune collection pour le moment
+          </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            {categories.map(cat => (
-              <Link key={cat} to={`/category/${encodeURIComponent(cat)}`}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {categories.map((cat, i) => (
+              <Link key={cat.name} to={`/category/${encodeURIComponent(cat.name)}`}>
                 <div style={{
-                  background: 'linear-gradient(135deg, #1a1a1a, #141414)',
-                  border: '1px solid #2a2a2a',
-                  borderRadius: 16,
+                  borderRadius: 4,
                   overflow: 'hidden',
-                  transition: 'all 0.2s',
+                  border: '1px solid #e8ddd4',
+                  background: '#fff',
+                  transition: 'all 0.3s',
+                  animationDelay: `${i * 0.1}s`,
                   cursor: 'pointer'
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#00b4f0'; e.currentTarget.style.transform = 'scale(1.02)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a2a'; e.currentTarget.style.transform = 'scale(1)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 32px rgba(184,144,106,0.2)'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
                 >
-                  <div style={{
-                    background: 'linear-gradient(135deg, #0d1a24, #0a1520)',
-                    padding: '32px 16px 16px',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ fontSize: 40, marginBottom: 6 }}>{CATEGORY_EMOJIS[cat] || '📦'}</div>
-                    <div style={{ fontFamily: 'Bebas Neue', fontSize: 18, letterSpacing: 2, color: '#00b4f0' }}>{cat}</div>
+                  {/* Category image */}
+                  <div style={{ position: 'relative', paddingTop: '100%', background: '#f5ede4', overflow: 'hidden' }}>
+                    {cat.imageUrl ? (
+                      <img src={cat.imageUrl} alt={cat.name}
+                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{
+                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: 'linear-gradient(135deg, #f5ede4, #edddd0)'
+                      }}>
+                        <span style={{ fontSize: 36 }}>👗</span>
+                      </div>
+                    )}
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(to top, rgba(58,46,39,0.55) 0%, transparent 60%)'
+                    }} />
+                    <div style={{
+                      position: 'absolute', bottom: 12, left: 0, right: 0, textAlign: 'center'
+                    }}>
+                      <div style={{
+                        fontFamily: 'Cormorant Garamond', fontSize: 17, color: '#fff',
+                        fontStyle: 'italic', letterSpacing: 1, textShadow: '0 1px 8px rgba(0,0,0,0.3)'
+                      }}>
+                        {cat.name}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Link>
@@ -80,26 +115,10 @@ export default function Home() {
         )}
       </div>
 
-      {/* Promo Banner */}
-      <div style={{
-        marginTop: 24,
-        background: 'linear-gradient(135deg, #1a0a00, #2a1000)',
-        border: '1px solid #ff3c0040',
-        borderRadius: 16, padding: '20px 24px',
-        textAlign: 'center'
-      }}>
-        <div style={{ fontFamily: 'Bebas Neue', fontSize: 28, color: '#ff3c00', letterSpacing: 3 }}>🔥 PROMO 4000 DA</div>
-        <div style={{ color: '#888', fontSize: 13, marginTop: 4 }}>Offres limitées disponibles</div>
-        <Link to="/category/PROMO">
-          <button style={{
-            marginTop: 12,
-            background: 'linear-gradient(135deg, #ff3c00, #cc2200)',
-            color: '#fff', padding: '10px 24px',
-            borderRadius: 20, fontWeight: 700, fontSize: 14
-          }}>
-            VOIR LES PROMOS →
-          </button>
-        </Link>
+      {/* Footer */}
+      <div style={{ textAlign: 'center', padding: '48px 24px 24px', color: '#9a8778', fontSize: 12, letterSpacing: 2 }}>
+        <div style={{ fontFamily: 'Cormorant Garamond', fontSize: 16, fontStyle: 'italic', marginBottom: 6 }}>ND Outfits</div>
+        MODE FÉMININE · ALGÉRIE
       </div>
     </div>
   );

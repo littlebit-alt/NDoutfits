@@ -16,21 +16,38 @@ export default function Category() {
   }, [name]);
 
   return (
-    <div className="page" style={{ maxWidth: 480, margin: '0 auto', padding: '20px 16px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <Link to="/" style={{ color: '#00b4f0', fontSize: 20 }}>←</Link>
-        <h1 style={{ fontFamily: 'Bebas Neue', fontSize: 28, letterSpacing: 3, color: '#00b4f0' }}>{name}</h1>
+    <div className="page" style={{ maxWidth: 480, margin: '0 auto', padding: '0 0 40px' }}>
+      {/* Header */}
+      <div style={{
+        padding: '28px 20px 24px',
+        background: 'linear-gradient(180deg, #f5ede4 0%, #faf7f4 100%)',
+        borderBottom: '1px solid #e8ddd4',
+        marginBottom: 24
+      }}>
+        <Link to="/" style={{ color: '#9a8778', fontSize: 13, letterSpacing: 1, display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+          ← Retour
+        </Link>
+        <div style={{ fontFamily: 'Cormorant Garamond', fontSize: 30, fontStyle: 'italic', color: '#3a2e27', fontWeight: 300 }}>
+          {name}
+        </div>
+        <div style={{ width: 32, height: 1, background: '#b8906a', marginTop: 8 }} />
       </div>
 
-      {loading ? (
-        <div style={{ textAlign: 'center', color: '#555', padding: 60 }}>⏳ Chargement...</div>
-      ) : products.length === 0 ? (
-        <div style={{ textAlign: 'center', color: '#555', padding: 60 }}>Aucun produit dans cette catégorie</div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          {products.map(p => <ProductCard key={p._id} product={p} />)}
-        </div>
-      )}
+      <div style={{ padding: '0 16px' }}>
+        {loading ? (
+          <div style={{ textAlign: 'center', color: '#9a8778', padding: 60, fontFamily: 'Cormorant Garamond', fontSize: 18, fontStyle: 'italic' }}>
+            Chargement...
+          </div>
+        ) : products.length === 0 ? (
+          <div style={{ textAlign: 'center', color: '#9a8778', padding: 60, fontFamily: 'Cormorant Garamond', fontSize: 18, fontStyle: 'italic' }}>
+            Aucun article dans cette collection
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {products.map(p => <ProductCard key={p._id} product={p} />)}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
