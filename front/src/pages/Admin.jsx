@@ -19,10 +19,24 @@ export default function Admin() {
   const token = localStorage.getItem('dzshark_token');
 
   useEffect(() => {
-    if (!token) { nav('/admin/login'); return; }
-    loadOrders();
-    loadProducts();
-  }, []);
+  const token = localStorage.getItem('dzshark_token');
+  if (!token) {
+    nav('/admin/login', { replace: true });
+    return;
+  }
+  // verify token is still valid by making a test request
+  API.get('/orders')
+    .then(r => {
+      setOrders(r.data);
+    })
+    .catch(err => {
+      if (err.response?.status === 401) {
+        localStorage.removeItem('dzshark_token');
+        nav('/admin/login', { replace: true });
+      }
+    });
+  loadProducts();
+}, []); 
 
   const loadOrders = () => API.get('/orders').then(r => setOrders(r.data)).catch(() => nav('/admin/login'));
   const loadProducts = () => API.get('/products').then(r => setProducts(r.data));

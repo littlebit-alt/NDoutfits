@@ -5,16 +5,29 @@ import API from '../api';
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const nav = useNavigate();
 
   const handleLogin = async () => {
+    if (!password) return;
+    setLoading(true);
+    setError('');
     try {
       const res = await API.post('/auth/login', { password });
-      localStorage.setItem('dzshark_token', res.data.token);
-      nav('/admin');
+      const token = res.data.token;
+      if (token) {
+        localStorage.setItem('dzshark_token', token);
+        // small delay to ensure localStorage is written
+        setTimeout(() => {
+          nav('/admin', { replace: true });
+        }, 100);
+      } else {
+        setError('No token received');
+      }
     } catch {
       setError('Wrong password');
     }
+    setLoading(false);
   };
 
   return (
@@ -35,10 +48,12 @@ export default function AdminLogin() {
         }}
       />
       {error && <div style={{ color: '#ff3c00', marginBottom: 10, fontSize: 13 }}>{error}</div>}
-      <button onClick={handleLogin} style={{
-        width: '100%', background: 'linear-gradient(135deg, #00b4f0, #0080c0)',
+      <button onClick={handleLogin} disabled={loading} style={{
+        width: '100%', background: loading ? '#333' : 'linear-gradient(135deg, #00b4f0, #0080c0)',
         color: '#fff', padding: 14, borderRadius: 10, fontSize: 16, fontWeight: 700
-      }}>LOGIN</button>
+      }}>
+        {loading ? 'Logging in...' : 'LOGIN'}
+      </button>
     </div>
   );
 }
