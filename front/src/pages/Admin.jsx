@@ -14,53 +14,62 @@ export default function Admin() {
   const [imageFile, setImageFile] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
   const [msg, setMsg] = useState('');
+  const [loading, setLoading] = useState(true);
   const fileRef = useRef();
 
   const token = localStorage.getItem('dzshark_token');
 
+  // Fixed useEffect - loads both orders and products
   useEffect(() => {
-  const token = localStorage.getItem('dzshark_token');
-  if (!token) {
-    nav('/admin/login', { replace: true });
-    return;
-  }
-  // verify token is still valid by making a test request
-  API.get('/orders')
-    .then(r => {
-      setOrders(r.data);
-    })
-    .catch(err => {
-      if (err.response?.status === 401) {
-        localStorage.removeItem('dzshark_token');
-        nav('/admin/login', { replace: true });
+    if (!token) {
+      nav('/admin/login', { replace: true });
+      return;
+    }
+    
+    const loadInitialData = async () => {
+      try {
+        await Promise.all([loadOrders(), loadProducts()]);
+      } catch (err) {
+        if (err.response?.status === 401) {
+          localStorage.removeItem('dzshark_token');
+          nav('/admin/login', { replace: true });
+        }
+      } finally {
+        setLoading(false);
       }
-    });
-  loadProducts();
-}, []); 
-if (!authChecked) {
-  return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      background: '#0a0a0a',
-      color: '#00b4f0',
-      fontFamily: 'Bebas Neue',
-      fontSize: 24,
-      letterSpacing: 3
-    }}>
-      🦈 Loading...
-    </div>
-  );
-}
+    };
+    
+    loadInitialData();
+  }, []);
 
-  const loadOrders = () => 
-  API.get('/orders').then(r => setOrders(r.data));
- const loadProducts = () => 
-  API.get('/products').then(r => setProducts(r.data));
+  // Fixed loadOrders with proper error handling
+  const loadOrders = async () => {
+    try {
+      const response = await API.get('/orders');
+      setOrders(response.data);
+      return response;
+    } catch (err) {
+      console.error('Failed to load orders:', err);
+      throw err;
+    }
+  };
 
-  const handleLogout = () => { localStorage.removeItem('dzshark_token'); nav('/admin/login'); };
+  // Fixed loadProducts with proper error handling
+  const loadProducts = async () => {
+    try {
+      const response = await API.get('/products');
+      setProducts(response.data);
+      return response;
+    } catch (err) {
+      console.error('Failed to load products:', err);
+      throw err;
+    }
+  };
+
+  const handleLogout = () => { 
+    localStorage.removeItem('dzshark_token'); 
+    nav('/admin/login'); 
+  };
 
   const handleProductSubmit = async () => {
     const data = new FormData();
@@ -79,7 +88,9 @@ if (!authChecked) {
       setImageFile(null);
       setEditingProduct(null);
       loadProducts();
-    } catch { setMsg('❌ Error'); }
+    } catch { 
+      setMsg('❌ Error'); 
+    }
   };
 
   const handleDeleteProduct = async (id) => {
@@ -103,13 +114,32 @@ if (!authChecked) {
     setEditingProduct(p);
     setForm({ name: p.name, description: p.description || '', price: p.price, category: p.category, rating: p.rating });
     setTab('add');
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   };
 
   const inputStyle = {
     width: '100%', background: '#111', border: '1px solid #2a2a2a',
     borderRadius: 8, padding: '10px 12px', color: '#fff', fontSize: 14, marginBottom: 12
   };
+
+  // Loading state while checking authentication
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        background: '#0a0a0a',
+        color: '#00b4f0',
+        fontFamily: 'Bebas Neue',
+        fontSize: 24,
+        letterSpacing: 3
+      }}>
+        🦈 Loading...
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto', padding: '20px 16px' }}>
