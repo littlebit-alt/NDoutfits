@@ -240,6 +240,11 @@ export default function Admin() {
               </div>
               {o.selectedPointure && <div style={{ color:'#9a8778', fontSize:13, marginBottom:2 }}>Pointure: <strong>{o.selectedPointure}</strong></div>}
               {o.selectedTaille && <div style={{ color:'#9a8778', fontSize:13, marginBottom:4 }}>Taille: <strong>{o.selectedTaille}</strong></div>}
+              {o.deliveryType && (
+  <div style={{ color:'#9a8778', fontSize:13, marginBottom:2 }}>
+    Livraison: <strong>{o.deliveryType === 'domicile' ? '🏠 Domicile' : '🏪 Stop desk'}</strong> — <strong style={{ color:'#b8906a' }}>{o.deliveryPrice?.toLocaleString()} دج</strong>
+  </div>
+)}
               {o.notes && <div style={{ color:'#9a8778', fontSize:13, marginBottom:8 }}>Note: {o.notes}</div>}
               <div style={{ color:'#ccc', fontSize:11, marginBottom:12 }}>{new Date(o.createdAt).toLocaleString()}</div>
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
