@@ -37,9 +37,28 @@ export default function Admin() {
     });
   loadProducts();
 }, []); 
+if (!authChecked) {
+  return (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '100vh',
+      background: '#0a0a0a',
+      color: '#00b4f0',
+      fontFamily: 'Bebas Neue',
+      fontSize: 24,
+      letterSpacing: 3
+    }}>
+      🦈 Loading...
+    </div>
+  );
+}
 
-  const loadOrders = () => API.get('/orders').then(r => setOrders(r.data)).catch(() => nav('/admin/login'));
-  const loadProducts = () => API.get('/products').then(r => setProducts(r.data));
+  const loadOrders = () => 
+  API.get('/orders').then(r => setOrders(r.data));
+ const loadProducts = () => 
+  API.get('/products').then(r => setProducts(r.data));
 
   const handleLogout = () => { localStorage.removeItem('dzshark_token'); nav('/admin/login'); };
 
