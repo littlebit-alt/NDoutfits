@@ -35,7 +35,7 @@ export default function Home() {
         <div style={{ fontFamily: 'Cormorant Garamond', fontSize: 13, color: '#9a8778', letterSpacing: 4, textTransform: 'uppercase', marginBottom: 20 }}>
           Mode Féminine · Algérie
         </div>
-        <a href="https://wa.me/213773002781" target="_blank" rel="noreferrer"
+        <a href="https://wa.me/213" target="_blank" rel="noreferrer"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: '#25D366', color: '#fff',
