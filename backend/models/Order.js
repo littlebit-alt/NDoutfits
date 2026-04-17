@@ -4,6 +4,8 @@ const OrderSchema = new mongoose.Schema({
   productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
   productName: String,
   quantity: { type: Number, default: 1 },
+  pointure: { type: String },
+  taille: { type: String },
   name: { type: String, required: true },
   phone: { type: String, required: true },
   wilaya: { type: String, required: true },

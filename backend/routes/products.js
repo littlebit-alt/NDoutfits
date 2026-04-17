@@ -14,7 +14,7 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: { folder: 'dzshark', allowed_formats: ['jpg', 'png', 'webp'] },
+  params: { folder: 'ndoutfits', allowed_formats: ['jpg','png','webp'] },
 });
 const upload = multer({ storage });
 
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
   res.json(products);
 });
 
-// GET categories list
+// GET categories list (from products)
 router.get('/categories', async (req, res) => {
   const cats = await Product.distinct('category');
   res.json(cats);
@@ -38,23 +38,42 @@ router.get('/:id', async (req, res) => {
   res.json(product);
 });
 
-// POST create product (admin)
-router.post('/', auth, upload.single('image'), async (req, res) => {
+// POST create product — up to 6 images
+router.post('/', auth, upload.array('images', 6), async (req, res) => {
   try {
-    const { name, description, price, category, rating } = req.body;
-    const imageUrl = req.file?.path || '';
-    const product = await Product.create({ name, description, price, category, imageUrl, rating });
+    const { name, description, price, category, rating, showPointure, pointures, showTaille, tailles } = req.body;
+    const images = req.files ? req.files.map(f => f.path) : [];
+    const product = await Product.create({
+      name, description, price, category,
+      images,
+      rating: Number(rating) || 5,
+      showPointure: showPointure === 'true',
+      pointures: pointures ? JSON.parse(pointures) : [],
+      showTaille: showTaille === 'true',
+      tailles: tailles ? JSON.parse(tailles) : [],
+    });
     res.status(201).json(product);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
-// PUT update product (admin)
-router.put('/:id', auth, upload.single('image'), async (req, res) => {
+// PUT update product
+router.put('/:id', auth, upload.array('images', 6), async (req, res) => {
   try {
-    const updates = { ...req.body };
-    if (req.file) updates.imageUrl = req.file.path;
+    const { name, description, price, category, rating, showPointure, pointures, showTaille, tailles, keepImages } = req.body;
+    const newImages = req.files ? req.files.map(f => f.path) : [];
+    const existing = keepImages ? JSON.parse(keepImages) : [];
+    const images = [...existing, ...newImages];
+    const updates = {
+      name, description, price, category,
+      images,
+      rating: Number(rating) || 5,
+      showPointure: showPointure === 'true',
+      pointures: pointures ? JSON.parse(pointures) : [],
+      showTaille: showTaille === 'true',
+      tailles: tailles ? JSON.parse(tailles) : [],
+    };
     const product = await Product.findByIdAndUpdate(req.params.id, updates, { new: true });
     res.json(product);
   } catch (err) {
@@ -62,7 +81,7 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
   }
 });
 
-// DELETE product (admin)
+// DELETE product
 router.delete('/:id', auth, async (req, res) => {
   await Product.findByIdAndDelete(req.params.id);
   res.json({ message: 'Deleted' });
